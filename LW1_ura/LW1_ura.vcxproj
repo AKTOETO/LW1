@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ponos.cpp" />
+    <ClCompile Include="put_eulerov.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data.txt" />

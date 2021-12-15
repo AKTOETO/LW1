@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ponos.cpp">
+    <ClCompile Include="put_eulerov.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
