@@ -36,16 +36,16 @@ void addEdge(int u, int v)
 	edges.push_back(make_pair(u,v));
 }
 
-void readMatr(string str)
+void readMatrix(string str)
 {
 	ifstream fin(str);
 	int sizeMatr, el;
 
-	//считал размер матрицы смежности
+	// считал размер матрицы смежности
 	fin >> sizeMatr;
 	cout << "\tsize: " << sizeMatr << endl;
 
-	//считал саму матрицу смежности
+	// считал саму матрицу смежности
 	for (int i = 0; i < sizeMatr; i++)
 	{
 		for (int j = 0; j < sizeMatr; j++)
@@ -92,7 +92,6 @@ void euler(int n)
 	{
 		if (edges[i].first == n)
 		{
-			//euler(edges[i].second);
 			node = edges[i].second;
 			edges.erase(edges.begin() + i);
 			break;
@@ -135,7 +134,7 @@ bool isEuler()
 int main()
 {
 	// считывание матрицы смежности
-	readMatr("data1.txt");
+	readMatrix("data.txt");
 
 	// TODO добавить проверку на существование эйлерова цикла
 	if (!isEuler())
