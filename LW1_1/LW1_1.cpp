@@ -1,159 +1,85 @@
-﻿#include <vector>
-#include <iostream>
+#include<iostream>
 #include <fstream>
-#include <algorithm>
-#include <utility>
+#include <cmath>
+#include <Windows.h>
 
 using namespace std;
 
-vector<pair<int, int>> edges;
-
-vector<int> visited_nodes;
-vector<int> answer;
-
-void printEdges()
+int main()
 {
-	cout << "\tedges:\n";
-	for (int i = 0; i < edges.size(); i++)
+	SetConsoleOutputCP(65001);
+
+	//Ввод файла в программу
+	ifstream file("data18.txt");
+	const int V = 9; 
+	int D[V][V];     
+	int E[V] = {};
+	int rad = 10000; 
+	int diametr = -1;
+
+	// ввод матрицы смежности
+	for (int i = 0; i < V; ++i)
 	{
-		cout << " " << i + 1 << ") "
-			<< edges[i].first + 1 << " -> "
-			<< edges[i].second + 1 << endl;
-	}
-	cout << endl;
-}
-
-template<typename  T>
-void printVec(vector<T> v)
-{
-	for (T n : v)
-		cout << ((n >= 0) ? (n + 1) : n) << " ";
-	cout << endl;
-}
-
-void addEdge(int u, int v)
-{
-	edges.push_back(make_pair(u,v));
-}
-
-void readMatrix(string str)
-{
-	ifstream fin(str);
-	int sizeMatr, el;
-
-	// считал размер матрицы смежности
-	fin >> sizeMatr;
-	cout << "\tsize: " << sizeMatr << endl;
-
-	// считал саму матрицу смежности
-	for (int i = 0; i < sizeMatr; i++)
-	{
-		for (int j = 0; j < sizeMatr; j++)
+		for (int j = 0; j < V; ++j)
 		{
-			fin >> el;
-			if (el)
+			file >> D[i][j];
+		}
+	}
+
+	//расчет кратчайших путей
+	for (int k = 0; k < V; ++k)
+	{
+		for (int i = 0; i < V; ++i)
+		{
+			for (int j = 0; j < V; ++j)
 			{
-				addEdge(i, j);
-				cout << " added edge: " << i + 1 << " -> " << j + 1 << endl;
+				if (i != j && D[i][k] != 0 && D[k][j] != 0)					
+					if ((D[i][j] > (D[i][k] + D[k][j])) || D[i][j] == 0)	
+						D[i][j] = (D[i][k] + D[k][j]);						
 			}
 		}
 	}
-	cout << "count of edges: " << edges.size() << endl;
-}
 
-void euler(int n)
-{
-
-	// выход, если закончились рёбра
-	if (edges.size() == 0)
+	cout << "Матрица кратчайших путей\n";
+	for (int i = 0; i < V; ++i)
 	{
-		visited_nodes.push_back(n);
-		return;
+		for (int j = 0; j < V; ++j)
+			cout << D[i][j] << " ";
+		cout << endl;
 	}
 
-	// проверка на отсутствие ребер из вершины n
-	if (n == -1)
+	//Расчет эксцентриситета
+	for (int i = 0; i < V; i++)
 	{
-		answer.push_back(visited_nodes[visited_nodes.size() - 1]);
-		visited_nodes.pop_back();
-		n = visited_nodes[visited_nodes.size() - 1];
-	}
-	else
-	{
-		// добавление текущей точки в массив посещенных точек
-		visited_nodes.push_back(n);
-	}
-
-	//следующая точка
-	int node = -1;
-
-	// поиск точки, в которую мы можем попасть из текущей точки
-	for (int i = 0; i < edges.size(); i++)
-	{
-		if (edges[i].first == n)
+		for (int j = 0; j < V; j++)
 		{
-			node = edges[i].second;
-			edges.erase(edges.begin() + i);
-			break;
+			//Выбор максимума среди изначального значения и по матрице кратчайших путей
+			E[i] = max(E[i], D[i][j]); 
 		}
 	}
 
-	// печать вектора посезенных элементов
-	cout << "visited_nodes: ";
-	printVec(visited_nodes);
-	cout << "answer: ";
-	printVec(answer);
-
-	// Печать рёбер
-	printEdges();
-
-	// Расчет следующего пути
-	euler(node);
-	return;
-}
-
-bool isEuler()
-{
-	// Проверка равенства полусумм входа и выхода
-	for (int j = 0; j < edges.size(); j++)
+	//for
+	for (int i = 0; i < V; ++i)//Вывод кратчайших расстояний до самой дальней вершины от данной
 	{
-		int sumIn = 0, sumOut = 0;
-		for (int i = 0; i < edges.size(); i++)
-		{
-			if (edges[i].first == j)
-				sumIn++;
-			if (edges[i].second == j)
-				sumOut++;
-		}
-		if (sumIn != sumOut)
-			return false;
-	}
-	return true;
-}
+		cout << "Значение эксцентриситета для вершины D" << i + 1 << " = " << E[i] << endl;
+	}//end for
 
-int main()
-{
-	// считывание матрицы смежности
-	readMatrix("data.txt");
-
-	// TODO добавить проверку на существование эйлерова цикла
-	if (!isEuler())
+	//for
+	for (int i = 0; i < V; i++)
 	{
-		cout << "Graph is not euler's\n";
-		return 0;
+		rad = min(rad, E[i]);
+		diametr = max(diametr, E[i]);
+	}//end for
+
+	cout << "Вывод радиуса графа:" << rad << endl;
+
+	cout << "Вывод диаметра графа:" << diametr << endl;
+
+	for (int i = 0; i < V; i++)
+	{
+		if (E[i] == rad)
+			cout << "центр - " << i + 1 << endl;
 	}
-
-	// вызвал метод поиска эйлерова цикла c вершины 0
-	euler(2);
-
-	// Вывод эйлерова цикла
-	reverse(visited_nodes.begin(), visited_nodes.end());
-	answer.insert(answer.end(), visited_nodes.begin(), visited_nodes.end());
-	reverse(answer.begin(), answer.end());
-
-	// печать ответа
-	cout << "answer: ";
-	printVec(answer);
 
 	return 0;
 }
